@@ -18,7 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "stdbool.h"
+#include "stdlib.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -31,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MAX_LEVEL 100
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -46,6 +48,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t rx_buffer[20] = {0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,6 +62,9 @@ void UART_SendText(volatile char*);
 void UART_SendNumber(uint32_t x);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 void start();
+void right_sequence();
+void wrong_sequence();
+void generate_sequence(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -73,6 +79,9 @@ char str_Freq[32];
 int ALLUME_LED = 0;
 int ALLUME_START = 1;
 uint16_t timer_val = 0;
+int level = 1;
+int sequence[MAX_LEVEL];
+int your_sequence[MAX_LEVEL];
 /* USER CODE END 0 */
 
 /**
@@ -112,7 +121,7 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   HAL_TIM_Base_Start(&htim16);
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
-  int f_test = 40000;
+  //int f_test = 40000;
   timer_val = __HAL_TIM_GET_COUNTER(&htim16);
 
   /* USER CODE END 2 */
@@ -147,11 +156,14 @@ int main(void)
 	  }
 	  */
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
-
+	  if (level==1) {
+	     generate_sequence();
+	   }
+	  //wrong_sequence();
 	  HAL_Delay(1000);
 	  if(Frequency < 10000)
 	  {
-		  start();
+		  //start();
 		  if(ALLUME_LED == 1)
 		  {
 			  ALLUME_LED = 0;
@@ -506,10 +518,26 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 				  		  if(ALLUME_START == 1)
 				  		  {
 				  			ALLUME_START = 0;
+
+//							HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
+//							HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
+//							HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+//				  			HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+//				  			int temp_compt = 0;
+//				  			for( int i=0 ; i<60000; i++)
+//				  			{
+//				  				temp_compt += i;
+//				  			}
+
 				  			HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 							HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 							HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 							HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+
+//				  			HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+//							HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+//							HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+//							HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
 //				  		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
 //				  		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
 //				  		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
@@ -539,6 +567,67 @@ void start()
 		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
 	  }
 
+}
+
+void right_sequence()
+{
+	HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+	HAL_Delay(2000);
+	HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+	HAL_Delay(1000);
+}
+
+void wrong_sequence()
+{
+	int i;
+	for(i = 0; i<3; i++)
+	{
+		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+		HAL_Delay(200);
+		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+		HAL_Delay(200);
+	}
+}
+
+void generate_sequence(void)
+{
+	 int i;
+	 int random = 0;
+	 for (i = 0; i < MAX_LEVEL; i++) {
+		random = rand() % 4;
+		switch(random)
+		{
+			case 0:
+				sequence[i]=0x0040U;
+				break;
+			case 1:
+				sequence[i]=0x0080U;
+				break;
+			case 2:
+				sequence[i]=0x0040U;
+				break;
+			case 3:
+				sequence[i]=0x0001U;
+				break;
+			default:
+				sequence[i]=0x0040U;
+		}
+
+
+	 }
+	 level++;
 }
 
 /* USER CODE END 4 */
