@@ -455,8 +455,8 @@ void UART_SendNumber(uint32_t x)
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-
-
+	if (htim == &htim2 )
+	{
 		  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)  // if interrput source is channel 1
 		   {
 		    if (Is_First_Captured==0)  // is the first value captured ?
@@ -506,10 +506,14 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 				  		  if(ALLUME_START == 1)
 				  		  {
 				  			ALLUME_START = 0;
-				  		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
-				  		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
-				  		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
-				  		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
+				  			HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+							HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+							HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+							HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+//				  		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
+//				  		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
+//				  		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
+//				  		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
 				  		  }
 
 
@@ -517,6 +521,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 		     }
 		    }
 		   }
+	}
+
+
 }
 
 void start()
@@ -524,11 +531,11 @@ void start()
 	  if(ALLUME_START == 1)
 	  {
 		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
-		  HAL_Delay(500);
+		  HAL_Delay(200);
 		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
-		  HAL_Delay(500);
+		  HAL_Delay(200);
 		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
-		  HAL_Delay(500);
+		  HAL_Delay(200);
 		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
 	  }
 
