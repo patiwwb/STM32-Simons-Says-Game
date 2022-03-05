@@ -1,0 +1,5 @@
+stm32f3xx_hal_msp.c:63:6:HAL_MspInit	16	static
+stm32f3xx_hal_msp.c:85:6:HAL_TIM_Base_MspInit	48	static
+stm32f3xx_hal_msp.c:134:6:HAL_TIM_Base_MspDeInit	16	static
+stm32f3xx_hal_msp.c:175:6:HAL_UART_MspInit	48	static
+stm32f3xx_hal_msp.c:214:6:HAL_UART_MspDeInit	16	static
