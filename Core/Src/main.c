@@ -58,6 +58,7 @@ static void MX_TIM16_Init(void);
 void UART_SendText(volatile char*);
 void UART_SendNumber(uint32_t x);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
+void start();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -70,6 +71,7 @@ int test = 0;
 uint8_t Is_First_Captured = 0;  // 0- not captured, 1- captured
 char str_Freq[32];
 int ALLUME_LED = 0;
+int ALLUME_START = 1;
 uint16_t timer_val = 0;
 /* USER CODE END 0 */
 
@@ -145,16 +147,11 @@ int main(void)
 	  }
 	  */
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
-	  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
-	  HAL_Delay(500);
-	  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
-	  HAL_Delay(500);
-	  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
-	  HAL_Delay(500);
-	  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
+
 	  HAL_Delay(1000);
 	  if(Frequency < 10000)
 	  {
+		  start();
 		  if(ALLUME_LED == 1)
 		  {
 			  ALLUME_LED = 0;
@@ -506,10 +503,35 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 				  			  ALLUME_LED = 1;
 				  			  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 				  		  }
+				  		  if(ALLUME_START == 1)
+				  		  {
+				  			ALLUME_START = 0;
+				  		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
+				  		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
+				  		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
+				  		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
+				  		  }
+
+
 				  	  }
 		     }
 		    }
 		   }
+}
+
+void start()
+{
+	  if(ALLUME_START == 1)
+	  {
+		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
+		  HAL_Delay(500);
+		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
+		  HAL_Delay(500);
+		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
+		  HAL_Delay(500);
+		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
+	  }
+
 }
 
 /* USER CODE END 4 */
