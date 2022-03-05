@@ -65,6 +65,7 @@ void start();
 void right_sequence();
 void wrong_sequence();
 void generate_sequence(void);
+void show_sequence();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -159,6 +160,7 @@ int main(void)
 	  if (level==1) {
 	     generate_sequence();
 	   }
+	  show_sequence();
 	  //wrong_sequence();
 	  HAL_Delay(1000);
 	  if(Frequency < 10000)
@@ -616,10 +618,10 @@ void generate_sequence(void)
 				sequence[i]=0x0080U;
 				break;
 			case 2:
-				sequence[i]=0x0040U;
+				sequence[i]=0x0001U;
 				break;
 			case 3:
-				sequence[i]=0x0001U;
+				sequence[i]=0x0002U;
 				break;
 			default:
 				sequence[i]=0x0040U;
@@ -628,6 +630,43 @@ void generate_sequence(void)
 
 	 }
 	 level++;
+}
+
+void show_sequence()
+{
+	 int i;
+	 for(int i=0; i < 10; i++)
+	 {
+		 switch(sequence[i])
+			{
+				case 0x0040U: //O
+					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+					HAL_Delay(200);
+					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+					HAL_Delay(200);
+					break;
+				case 0x0080U: //1
+					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
+					HAL_Delay(200);
+					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+					HAL_Delay(200);
+					break;
+				case 0x0001U: //2
+					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
+					HAL_Delay(200);
+					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+					HAL_Delay(200);
+					break;
+				case 0x0002U: //3
+					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+					HAL_Delay(200);
+					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+					HAL_Delay(200);
+					break;
+				default:
+					wrong_sequence();
+			}
+	 }
 }
 
 /* USER CODE END 4 */
