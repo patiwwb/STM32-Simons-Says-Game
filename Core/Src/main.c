@@ -33,6 +33,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define MAX_LEVEL 100
+#define DEBUG 0
+//#define DEBUG 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -68,6 +70,7 @@ void wrong_sequence();
 void generate_sequence(void);
 void show_sequence();
 void get_sequence();
+void test_PIN();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -162,7 +165,11 @@ int main(void)
 	  */
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
 
+	  while(1){
+		  test_PIN();
+	  }
 
+	  /*
 	  if (level==1) {
 	     generate_sequence();
 	   }
@@ -171,6 +178,7 @@ int main(void)
 	  level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
+		*/
 
 	  /*
 	  if(Frequency < 10000)
@@ -770,6 +778,29 @@ void get_sequence()
 
 	}
 	 right_sequence(); //Як послідовність вірна, викличемо функцію right_sequence
+}
+
+void test_PIN()
+{
+	bool flag;
+    flag = false;
+	int temp_freq = Frequency;
+	while(flag == false)
+	{
+		while (__HAL_TIM_GET_COUNTER(&htim16) - timer_val_get <= 1500)
+		{
+			if(Frequency != temp_freq )
+			{
+				Frequency = 0;
+				temp_freq = Frequency;
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+				flag=true;
+				HAL_Delay(500);
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+			}
+		}
+		timer_val_get = __HAL_TIM_GET_COUNTER(&htim16);
+	}
 }
 
 /* USER CODE END 4 */
