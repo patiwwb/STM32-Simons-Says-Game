@@ -165,20 +165,18 @@ int main(void)
 	  */
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
 
-	  while(1){
-		  test_PIN();
-	  }
+//---------------------------------------------------------------------------------------------------
 
-	  /*
 	  if (level==1) {
 	     generate_sequence();
 	   }
 	  show_sequence();
 	  get_sequence();
-	  level++;
+	  //level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
-		*/
+
+//---------------------------------------------------------------------------------------------------
 
 	  /*
 	  if(Frequency < 10000)
@@ -577,7 +575,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 void start()
 {
 	  uint16_t start_rand=0;
-	  srand(start_rand);
+
 	  while(ALLUME_START == 1)
 	  {
 		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
@@ -587,12 +585,13 @@ void start()
 		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
 		  HAL_Delay(200);
 		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
+		  start_rand++;
 	  }
 	  HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
 	  HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 	  HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 	  HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-
+	  srand(start_rand);
 	  ALLUME_LED = 0;
 	  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
@@ -609,6 +608,10 @@ void right_sequence()
 	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+//	if (level<MAX_LEVEL) {
+//	  level++;
+//	}
+//	velocity -=50;
 	HAL_Delay(1000);
 }
 
@@ -628,6 +631,8 @@ void wrong_sequence()
 		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 		HAL_Delay(200);
 	}
+	//level = 1;
+	//velocity = 1000;
 }
 
 void generate_sequence(void)
@@ -667,6 +672,7 @@ void generate_sequence(void)
 void show_sequence()
 {
 	 int i;
+	 //for(i=0; i < level; i++)
 	 for(i=0; i < 6; i++)
 	 {
 		 switch(sequence[i])
