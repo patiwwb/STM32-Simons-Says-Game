@@ -159,11 +159,13 @@ int main(void)
 	  }
 	  */
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
+
+
 	  if (level==1) {
 	     generate_sequence();
-	     show_sequence();
 	   }
-
+	  show_sequence();
+	  level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
 	  if(Frequency < 10000)
@@ -561,7 +563,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 void start()
 {
-	  if(ALLUME_START == 1)
+	  uint16_t start_rand=0;
+	  srand(start_rand);
+	  while(ALLUME_START == 1)
 	  {
 		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
 		  HAL_Delay(200);
@@ -571,6 +575,13 @@ void start()
 		  HAL_Delay(200);
 		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
 	  }
+	  HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+
+	  ALLUME_LED = 0;
+	  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
 }
 
@@ -608,6 +619,7 @@ void wrong_sequence()
 
 void generate_sequence(void)
 {
+	start();
 	 int i;
 	 int random = 0;
 	 for (i = 0; i < MAX_LEVEL; i++) {
