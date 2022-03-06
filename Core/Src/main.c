@@ -48,7 +48,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t rx_buffer[20] = {0};
-
+enum LEDS_hex { LED1_hex = 0x0040U, LED2_hex = 0x0080U , LED3_hex = 0x0001U, LED4_hex = 0x0002U };
+enum LEDS_dec { LED1_dec = 64, LED2_dec = 128 , LED3_dec = 1, LED4_dec = 2 };
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -165,6 +166,7 @@ int main(void)
 	     generate_sequence();
 	   }
 	  show_sequence();
+	  get_sequence();
 	  level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
@@ -621,36 +623,40 @@ void generate_sequence(void)
 {
 	start();
 	 int i;
-	 int random = 0;
-	 for (i = 0; i < MAX_LEVEL; i++) {
-		random = rand() % 4;
-		switch(random)
-		{
-			case 0:
-				sequence[i]=0x0040U;
-				break;
-			case 1:
-				sequence[i]=0x0080U;
-				break;
-			case 2:
-				sequence[i]=0x0001U;
-				break;
-			case 3:
-				sequence[i]=0x0002U;
-				break;
-			default:
-				sequence[i]=0x0040U;
-		}
-
-
+//	 int random = 0;
+//	 for (i = 0; i < MAX_LEVEL; i++) {
+//		random = rand() % 4;
+//		switch(random)
+//		{
+//			case 0:
+//				sequence[i]=0x0040U;
+//				break;
+//			case 1:
+//				sequence[i]=0x0080U;
+//				break;
+//			case 2:
+//				sequence[i]=0x0001U;
+//				break;
+//			case 3:
+//				sequence[i]=0x0002U;
+//				break;
+//			default:
+//				sequence[i]=0x0040U;
+//		}
+//
+//
+//	 }
+	 for (i = 0; i <5; i++) {
+		 sequence[i] = LED1_hex;
 	 }
+	 sequence[5] = LED2_hex;
 	 level++;
 }
 
 void show_sequence()
 {
 	 int i;
-	 for(int i=0; i < 10; i++)
+	 for(i=0; i < 6; i++)
 	 {
 		 switch(sequence[i])
 			{
@@ -688,13 +694,15 @@ void get_sequence()
 {
 	bool flag;
 	int i;
-	for(int i=0; i<10;i++)
+	int temp_freq = Frequency;
+	for(i=0; i<10;i++)
 	{
 		flag = false;
 		while(flag == false)
 		{
-			if(Frequency < 10000)
+			if(Frequency != temp_freq )
 			{
+				temp_freq = Frequency;
 				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
 				your_sequence[i] = 0x0040U;
 				flag=true;
@@ -705,6 +713,7 @@ void get_sequence()
 					return;
 				}
 				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+
 			}
 
 //			if(Frequency < 10000)
