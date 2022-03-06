@@ -66,6 +66,7 @@ void right_sequence();
 void wrong_sequence();
 void generate_sequence(void);
 void show_sequence();
+void get_sequence();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -81,6 +82,7 @@ int ALLUME_LED = 0;
 int ALLUME_START = 1;
 uint16_t timer_val = 0;
 int level = 1;
+int velocity = 1000;
 int sequence[MAX_LEVEL];
 int your_sequence[MAX_LEVEL];
 /* USER CODE END 0 */
@@ -159,8 +161,9 @@ int main(void)
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
 	  if (level==1) {
 	     generate_sequence();
+	     show_sequence();
 	   }
-	  show_sequence();
+
 	  //wrong_sequence();
 	  HAL_Delay(1000);
 	  if(Frequency < 10000)
@@ -641,25 +644,25 @@ void show_sequence()
 			{
 				case 0x0040U: //O
 					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-					HAL_Delay(200);
+					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
 				case 0x0080U: //1
 					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
-					HAL_Delay(200);
+					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
 				case 0x0001U: //2
 					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
-					HAL_Delay(200);
+					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
 				case 0x0002U: //3
 					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
-					HAL_Delay(200);
+					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
@@ -667,6 +670,75 @@ void show_sequence()
 					wrong_sequence();
 			}
 	 }
+}
+
+void get_sequence()
+{
+	bool flag;
+	int i;
+	for(int i=0; i<10;i++)
+	{
+		flag = false;
+		while(flag == false)
+		{
+			if(Frequency < 10000)
+			{
+				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+				your_sequence[i] = 0x0040U;
+				flag=true;
+				HAL_Delay(200);
+				if (your_sequence[i] != sequence[i])
+				{
+					wrong_sequence();
+					return;
+				}
+				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+			}
+
+//			if(Frequency < 10000)
+//			{
+//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+//				your_sequence[i] = 0x0040U;
+//				flag=true;
+//				HAL_Delay(200);
+//				if (your_sequence[i] != sequence[i])
+//				{
+//					wrong_sequence();
+//					return;
+//				}
+//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+//			}
+//
+//			if(Frequency < 10000)
+//			{
+//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+//				your_sequence[i] = 0x0040U;
+//				flag=true;
+//				HAL_Delay(200);
+//				if (your_sequence[i] != sequence[i])
+//				{
+//					wrong_sequence();
+//					return;
+//				}
+//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+//			}
+//
+//			if(Frequency < 10000)
+//			{
+//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+//				your_sequence[i] = 0x0040U;
+//				flag=true;
+//				HAL_Delay(200);
+//				if (your_sequence[i] != sequence[i])
+//				{
+//					wrong_sequence();
+//					return;
+//				}
+//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+//			}
+		}
+	}
+	 right_sequence(); //Як послідовність вірна, викличемо функцію right_sequence
 }
 
 /* USER CODE END 4 */
