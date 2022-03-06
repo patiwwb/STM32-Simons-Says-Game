@@ -82,6 +82,7 @@ char str_Freq[32];
 int ALLUME_LED = 0;
 int ALLUME_START = 1;
 uint16_t timer_val = 0;
+uint16_t timer_val_get = 0;
 int level = 1;
 int velocity = 1000;
 int sequence[MAX_LEVEL];
@@ -127,7 +128,7 @@ int main(void)
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
   //int f_test = 40000;
   timer_val = __HAL_TIM_GET_COUNTER(&htim16);
-
+  timer_val_get = timer_val;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -170,6 +171,8 @@ int main(void)
 	  level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
+
+	  /*
 	  if(Frequency < 10000)
 	  {
 		  //start();
@@ -179,7 +182,7 @@ int main(void)
 			  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 		  }
 	  }
-
+	*/
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -695,69 +698,76 @@ void get_sequence()
 	bool flag;
 	int i;
 	int temp_freq = Frequency;
-	for(i=0; i<10;i++)
+	for(i=0; i<6;i++)
 	{
-		flag = false;
-		while(flag == false)
-		{
-			if(Frequency != temp_freq )
+			flag = false;
+			while(flag == false)
 			{
-				temp_freq = Frequency;
-				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-				your_sequence[i] = 0x0040U;
-				flag=true;
-				HAL_Delay(200);
-				if (your_sequence[i] != sequence[i])
+				while (__HAL_TIM_GET_COUNTER(&htim16) - timer_val_get <= 1500)
 				{
-					wrong_sequence();
-					return;
-				}
-				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+					if(Frequency != temp_freq )
+					{
+						Frequency = 0;
+						temp_freq = Frequency;
+						HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+						your_sequence[i] = 0x0040U;
+						flag=true;
+						HAL_Delay(200);
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+						if (your_sequence[i] != sequence[i])
+						{
+							wrong_sequence();
+							return;
+						}
+						HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 
+					}
+
+		//			if(Frequency < 10000)
+		//			{
+		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+		//				your_sequence[i] = 0x0040U;
+		//				flag=true;
+		//				HAL_Delay(200);
+		//				if (your_sequence[i] != sequence[i])
+		//				{
+		//					wrong_sequence();
+		//					return;
+		//				}
+		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+		//			}
+		//
+		//			if(Frequency < 10000)
+		//			{
+		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+		//				your_sequence[i] = 0x0040U;
+		//				flag=true;
+		//				HAL_Delay(200);
+		//				if (your_sequence[i] != sequence[i])
+		//				{
+		//					wrong_sequence();
+		//					return;
+		//				}
+		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+		//			}
+		//
+		//			if(Frequency < 10000)
+		//			{
+		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+		//				your_sequence[i] = 0x0040U;
+		//				flag=true;
+		//				HAL_Delay(200);
+		//				if (your_sequence[i] != sequence[i])
+		//				{
+		//					wrong_sequence();
+		//					return;
+		//				}
+		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+		//			}
 			}
-
-//			if(Frequency < 10000)
-//			{
-//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-//				your_sequence[i] = 0x0040U;
-//				flag=true;
-//				HAL_Delay(200);
-//				if (your_sequence[i] != sequence[i])
-//				{
-//					wrong_sequence();
-//					return;
-//				}
-//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-//			}
-//
-//			if(Frequency < 10000)
-//			{
-//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-//				your_sequence[i] = 0x0040U;
-//				flag=true;
-//				HAL_Delay(200);
-//				if (your_sequence[i] != sequence[i])
-//				{
-//					wrong_sequence();
-//					return;
-//				}
-//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-//			}
-//
-//			if(Frequency < 10000)
-//			{
-//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-//				your_sequence[i] = 0x0040U;
-//				flag=true;
-//				HAL_Delay(200);
-//				if (your_sequence[i] != sequence[i])
-//				{
-//					wrong_sequence();
-//					return;
-//				}
-//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-//			}
+			timer_val_get = __HAL_TIM_GET_COUNTER(&htim16);
 		}
+
 	}
 	 right_sequence(); //Як послідовність вірна, викличемо функцію right_sequence
 }
