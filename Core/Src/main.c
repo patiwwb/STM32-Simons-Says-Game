@@ -56,7 +56,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t rx_buffer[20] = {0};
-enum LEDS_hex { LED1_hex = 0x0040U, LED2_hex = 0x0080U , LED3_hex = 0x0001U, LED4_hex = 0x0002U };
+enum LEDS_hex { LED1_hex = 0x0040U, LED2_hex = 0x0080U , LED3_hex = 0x0002U, LED4_hex = 0x0001U };
 enum LEDS_dec { LED1_dec = 64, LED2_dec = 128 , LED3_dec = 1, LED4_dec = 2 };
 /* USER CODE END PV */
 
@@ -205,12 +205,12 @@ int main(void)
 	  {
 		  HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 	  }
-*/
 
-	  BEEP(600,100);
-	  HAL_Delay(1000);
+*/
+	 // BEEP(600,100);
+	  //HAL_Delay(1000);
 //---------------------------------------------------------------------------------------------------
-/*
+
 	  if (level==1) {
 	     generate_sequence();
 	   }
@@ -219,7 +219,7 @@ int main(void)
 	  //level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
-*/
+
 //---------------------------------------------------------------------------------------------------
 
 	  /*
@@ -580,6 +580,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 				  timer_val = __HAL_TIM_GET_COUNTER(&htim16);
 				  if(Frequency < 10000)
 				  	  {
+
 //				  		  ALLUME_LED =~ ALLUME_LED;
 //				  		  HAL_Delay(500);
 //				  		  if(ALLUME_LED == 1)
@@ -689,8 +690,8 @@ void wrong_sequence()
 		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 		HAL_Delay(200);
 	}
-	//level = 1;
-	//velocity = 1000;
+	level = 1;
+	velocity = 1000;
 }
 
 void generate_sequence(void)
@@ -703,19 +704,19 @@ void generate_sequence(void)
 		switch(random)
 		{
 			case 0:
-				sequence[i]=0x0040U;
+				sequence[i]=LED1_hex;
 				break;
 			case 1:
-				sequence[i]=0x0080U;
+				sequence[i]=LED2_hex;
 				break;
 			case 2:
-				sequence[i]=0x0001U;
+				sequence[i]=LED3_hex;
 				break;
 			case 3:
-				sequence[i]=0x0002U;
+				sequence[i]=LED4_hex;
 				break;
 			default:
-				sequence[i]=0x0040U;
+				sequence[i]=LED1_hex;
 		}
 
 
@@ -735,25 +736,25 @@ void show_sequence()
 	 {
 		 switch(sequence[i])
 			{
-				case 0x0040U: //O
+				case LED1_hex: //O
 					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
-				case 0x0080U: //1
+				case LED2_hex: //1
 					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
-				case 0x0001U: //2
+				case LED3_hex: //2
 					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
 					HAL_Delay(200);
 					break;
-				case 0x0002U: //3
+				case LED4_hex: //3
 					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
@@ -769,6 +770,7 @@ void get_sequence()
 {
 	bool flag;
 	int i;
+	int temp_freq = Frequency;
 	for(i=0; i<level;i++)
 	{
 			flag = false;
@@ -778,7 +780,7 @@ void get_sequence()
 					if(HAL_GPIO_ReadPin(BT_1_GPIO_Port,BT_1_Pin) == GPIO_PIN_SET)
 					{
 						HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-						your_sequence[i] = 0x0040U;
+						your_sequence[i] = LED1_hex;
 						flag=true;
 						HAL_Delay(200);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -793,7 +795,7 @@ void get_sequence()
 					if(HAL_GPIO_ReadPin(BT_2_GPIO_Port,BT_2_Pin) == GPIO_PIN_SET)
 					{
 						HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
-						your_sequence[i] = 0x0080U;
+						your_sequence[i] = LED2_hex;
 						flag=true;
 						HAL_Delay(200);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -808,7 +810,7 @@ void get_sequence()
 					if(HAL_GPIO_ReadPin(BT_3_GPIO_Port,BT_3_Pin) == GPIO_PIN_SET)
 					{
 						HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
-						your_sequence[i] = 0x0001U;
+						your_sequence[i] = LED3_hex;
 						flag=true;
 						HAL_Delay(200);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -823,7 +825,7 @@ void get_sequence()
 					if(HAL_GPIO_ReadPin(BT_4_GPIO_Port,BT_4_Pin) == GPIO_PIN_SET)
 					{
 						HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
-						your_sequence[i] = 0x0002U;
+						your_sequence[i] = LED4_hex;
 						flag=true;
 						HAL_Delay(200);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -834,6 +836,19 @@ void get_sequence()
 						}
 						HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 
+					}
+					if(Frequency < 10000 && Frequency != temp_freq )
+					//if(Frequency != temp_freq )
+					{
+						Frequency = 0;
+						temp_freq = Frequency;
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+						flag=true;
+						HAL_Delay(200);
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+						ALLUME_START = 1;
+						wrong_sequence();
+						return;
 					}
 
 			while (__HAL_TIM_GET_COUNTER(&htim16) - timer_val_get <= 160);
