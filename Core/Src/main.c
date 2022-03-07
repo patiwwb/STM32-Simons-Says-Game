@@ -18,11 +18,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stdbool.h"
-#include "stdlib.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdlib.h"
+#include "stdbool.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +34,12 @@
 /* USER CODE BEGIN PD */
 #define MAX_LEVEL 100
 #define DEBUG 0
+
+// Denote the tone of the sound
+#define TON1 600
+#define TON2 500
+#define TON3 400
+#define TON4 300
 //#define DEBUG 1
 /* USER CODE END PD */
 
@@ -71,6 +77,7 @@ void generate_sequence(void);
 void show_sequence();
 void get_sequence();
 void test_PIN();
+void BEEP(uint16_t tone, uint16_t time);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -165,8 +172,45 @@ int main(void)
 	  */
 	  //HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_SET);
 
-//---------------------------------------------------------------------------------------------------
+/*
+	  if(HAL_GPIO_ReadPin(BT_1_GPIO_Port,BT_1_Pin) == GPIO_PIN_SET)
+	  {
+		  HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+	  }
+	  if(HAL_GPIO_ReadPin(BT_2_GPIO_Port,BT_2_Pin) == GPIO_PIN_SET)
+	  {
+		 HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+	  }
+	  if(HAL_GPIO_ReadPin(BT_3_GPIO_Port,BT_3_Pin) == GPIO_PIN_SET)
+	  {
+		  HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+	  }
+	  if(HAL_GPIO_ReadPin(BT_4_GPIO_Port,BT_4_Pin) == GPIO_PIN_SET)
+	  {
+		  HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+	  }
+*/
 
+	  BEEP(600,100);
+	  HAL_Delay(1000);
+//---------------------------------------------------------------------------------------------------
+/*
 	  if (level==1) {
 	     generate_sequence();
 	   }
@@ -175,7 +219,7 @@ int main(void)
 	  //level++;
 	  //wrong_sequence();
 	  HAL_Delay(1000);
-
+*/
 //---------------------------------------------------------------------------------------------------
 
 	  /*
@@ -203,6 +247,8 @@ int main(void)
 	  UART_SendText("\r\n");
 	  */
 
+
+//-------------------------------------------------------------------------------------------------------------------------
 	  UART_SendText("Frequency ");
 	  //HAL_Delay(500);
 	  UART_SendNumber(Frequency);
@@ -211,7 +257,7 @@ int main(void)
 	  //HAL_Delay(500);
 	  HAL_Delay(300);
 	  Frequency = 0;
-
+//-------------------------------------------------------------------------------------------------------------------------
 
 
 	  /*
@@ -419,7 +465,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LED_1_Pin|LED_2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_3_Pin|LED_4_Pin|LD3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED_3_Pin|LED_4_Pin|LD3_Pin|BUZZER_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : LED_1_Pin LED_2_Pin */
   GPIO_InitStruct.Pin = LED_1_Pin|LED_2_Pin;
@@ -428,8 +474,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED_3_Pin LED_4_Pin LD3_Pin */
-  GPIO_InitStruct.Pin = LED_3_Pin|LED_4_Pin|LD3_Pin;
+  /*Configure GPIO pins : LED_3_Pin LED_4_Pin LD3_Pin BUZZER_Pin */
+  GPIO_InitStruct.Pin = LED_3_Pin|LED_4_Pin|LD3_Pin|BUZZER_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -441,6 +487,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BT_1_Pin */
+  GPIO_InitStruct.Pin = BT_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BT_1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : BT_2_Pin BT_3_Pin BT_4_Pin */
+  GPIO_InitStruct.Pin = BT_2_Pin|BT_3_Pin|BT_4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
@@ -608,10 +666,10 @@ void right_sequence()
 	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-//	if (level<MAX_LEVEL) {
-//	  level++;
-//	}
-//	velocity -=50;
+	if (level<MAX_LEVEL) {
+	  level++;
+	}
+	velocity -=50;
 	HAL_Delay(1000);
 }
 
@@ -639,41 +697,41 @@ void generate_sequence(void)
 {
 	start();
 	 int i;
-//	 int random = 0;
-//	 for (i = 0; i < MAX_LEVEL; i++) {
-//		random = rand() % 4;
-//		switch(random)
-//		{
-//			case 0:
-//				sequence[i]=0x0040U;
-//				break;
-//			case 1:
-//				sequence[i]=0x0080U;
-//				break;
-//			case 2:
-//				sequence[i]=0x0001U;
-//				break;
-//			case 3:
-//				sequence[i]=0x0002U;
-//				break;
-//			default:
-//				sequence[i]=0x0040U;
-//		}
-//
-//
-//	 }
-	 for (i = 0; i <5; i++) {
-		 sequence[i] = LED1_hex;
+	 int random = 0;
+	 for (i = 0; i < MAX_LEVEL; i++) {
+		random = rand() % 4;
+		switch(random)
+		{
+			case 0:
+				sequence[i]=0x0040U;
+				break;
+			case 1:
+				sequence[i]=0x0080U;
+				break;
+			case 2:
+				sequence[i]=0x0001U;
+				break;
+			case 3:
+				sequence[i]=0x0002U;
+				break;
+			default:
+				sequence[i]=0x0040U;
+		}
+
+
 	 }
-	 sequence[5] = LED2_hex;
-	 level++;
+//	 for (i = 0; i <5; i++) {
+//		 sequence[i] = LED1_hex;
+//	 }
+//	 sequence[5] = LED2_hex;
+//	 level++;
 }
 
 void show_sequence()
 {
 	 int i;
-	 //for(i=0; i < level; i++)
-	 for(i=0; i < 6; i++)
+	 for(i=0; i < level; i++)
+	 //for(i=0; i < 6; i++)
 	 {
 		 switch(sequence[i])
 			{
@@ -711,15 +769,96 @@ void get_sequence()
 {
 	bool flag;
 	int i;
+	for(i=0; i<level;i++)
+	{
+			flag = false;
+			while(flag == false)
+			{HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_RESET);
+
+					if(HAL_GPIO_ReadPin(BT_1_GPIO_Port,BT_1_Pin) == GPIO_PIN_SET)
+					{
+						HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
+						your_sequence[i] = 0x0040U;
+						flag=true;
+						HAL_Delay(200);
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+						if (your_sequence[i] != sequence[i])
+						{
+							wrong_sequence();
+							return;
+						}
+						HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
+
+					}
+					if(HAL_GPIO_ReadPin(BT_2_GPIO_Port,BT_2_Pin) == GPIO_PIN_SET)
+					{
+						HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
+						your_sequence[i] = 0x0080U;
+						flag=true;
+						HAL_Delay(200);
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+						if (your_sequence[i] != sequence[i])
+						{
+							wrong_sequence();
+							return;
+						}
+						HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
+
+					}
+					if(HAL_GPIO_ReadPin(BT_3_GPIO_Port,BT_3_Pin) == GPIO_PIN_SET)
+					{
+						HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
+						your_sequence[i] = 0x0001U;
+						flag=true;
+						HAL_Delay(200);
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+						if (your_sequence[i] != sequence[i])
+						{
+							wrong_sequence();
+							return;
+						}
+						HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
+
+					}
+					if(HAL_GPIO_ReadPin(BT_4_GPIO_Port,BT_4_Pin) == GPIO_PIN_SET)
+					{
+						HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+						your_sequence[i] = 0x0002U;
+						flag=true;
+						HAL_Delay(200);
+						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+						if (your_sequence[i] != sequence[i])
+						{
+							wrong_sequence();
+							return;
+						}
+						HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+
+					}
+
+			while (__HAL_TIM_GET_COUNTER(&htim16) - timer_val_get <= 160);
+			timer_val_get = __HAL_TIM_GET_COUNTER(&htim16);
+
+		}
+
+	}
+	 right_sequence();
+}
+
+/*
+void get_sequence()
+{
+	bool flag;
+	int i;
 	int temp_freq = Frequency;
 	for(i=0; i<6;i++)
 	{
 			flag = false;
 			while(flag == false)
 			{
-				while (__HAL_TIM_GET_COUNTER(&htim16) - timer_val_get <= 1500)
-				{
-					if(Frequency != temp_freq )
+
+					if(Frequency < 10000 && Frequency !=0 )
+					//if(Frequency != temp_freq )
 					{
 						Frequency = 0;
 						temp_freq = Frequency;
@@ -778,13 +917,15 @@ void get_sequence()
 		//				}
 		//				HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
 		//			}
-			}
+			while (__HAL_TIM_GET_COUNTER(&htim16) - timer_val_get <= 1000);
 			timer_val_get = __HAL_TIM_GET_COUNTER(&htim16);
+
 		}
 
 	}
-	 right_sequence(); //Як послідовність вірна, викличемо функцію right_sequence
+	 right_sequence();
 }
+*/
 
 void test_PIN()
 {
@@ -807,6 +948,16 @@ void test_PIN()
 		}
 		timer_val_get = __HAL_TIM_GET_COUNTER(&htim16);
 	}
+}
+
+void BEEP( uint16_t tone, uint16_t time) { // The function takes the value of the sound tone and the duration of the sound
+ uint16_t j;
+ for (j =  0 ; j < time; ++ j) {
+	 BUZZER_GPIO_Port->BSRR = BUZZER_Pin;
+	 HAL_Delay(tone);
+	 BUZZER_GPIO_Port->BRR = BUZZER_Pin;
+	 HAL_Delay(tone);
+ }
 }
 
 /* USER CODE END 4 */

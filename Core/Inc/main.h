@@ -65,8 +65,18 @@ void Error_Handler(void);
 #define LED_3_GPIO_Port GPIOB
 #define LED_4_Pin GPIO_PIN_1
 #define LED_4_GPIO_Port GPIOB
+#define BT_1_Pin GPIO_PIN_9
+#define BT_1_GPIO_Port GPIOA
+#define BT_2_Pin GPIO_PIN_10
+#define BT_2_GPIO_Port GPIOA
+#define BT_3_Pin GPIO_PIN_11
+#define BT_3_GPIO_Port GPIOA
+#define BT_4_Pin GPIO_PIN_12
+#define BT_4_GPIO_Port GPIOA
 #define LD3_Pin GPIO_PIN_3
 #define LD3_GPIO_Port GPIOB
+#define BUZZER_Pin GPIO_PIN_5
+#define BUZZER_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
