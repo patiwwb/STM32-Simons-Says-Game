@@ -44,10 +44,10 @@ enum LEDS_hex { LED1_hex = 0x0040U, LED2_hex = 0x0080U , LED3_hex = 0x0002U, LED
 enum LEDS_dec { LED1_dec = 64, LED2_dec = 128 , LED3_dec = 1, LED4_dec = 2 };
 
 // Denote the tone of the sound
-#define TON1 600
-#define TON2 500
-#define TON3 400
-#define TON4 300
+#define TON1 400
+#define TON2 300
+#define TON3 200
+#define TON4 100
 //#define DEBUG 1
 /* USER CODE END PD */
 
@@ -77,7 +77,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_TIM16_Init(void);
 /* USER CODE BEGIN PFP */
 void UART_SendText(volatile char*);
 void UART_SendNumber(uint32_t x);
@@ -111,7 +110,7 @@ int ALLUME_START = 1;
 uint16_t timer_val = 0;
 uint16_t timer_val_get = 0;
 int level = 1;
-int velocity = 1000;
+int velocity = 250;
 int sequence[MAX_LEVEL];
 int your_sequence[MAX_LEVEL];
 
@@ -147,11 +146,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_USART2_UART_Init();
-  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
-  HAL_TIM_Base_Start_IT(&htim16);
-  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
 
   //timer_val = __HAL_TIM_GET_COUNTER(&htim16);
@@ -162,24 +158,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  htim16.Instance->CCR1 = 25;  // duty cycle is .5 ms
-	  HAL_Delay(2000);
-	  htim16.Instance->CCR1 = 75;  // duty cycle is 1.5 ms
-	  HAL_Delay(2000);
-	  htim16.Instance->CCR1 = 125;  // duty cycle is 2.5 ms
-	  HAL_Delay(2000);
-
 //		HAL_GPIO_WritePin(GPIOB, LD3_Pin, 1);
 //		HAL_Delay(500);
 //		HAL_GPIO_WritePin(GPIOB, LD3_Pin, 0);
 //		HAL_Delay(500);
-//	  if (level==1) {
-//	  	     generate_sequence();
-//	  }
-//	  show_sequence();
-//	  get_sequence();
-
-
+	  if (level==1) {
+	  	     generate_sequence();
+	  }
+	  show_sequence();
+	  get_sequence();
 	  //level++;
 	  //wrong_sequence();
 	  //HAL_Delay(1000);
@@ -291,68 +278,6 @@ static void MX_TIM2_Init(void)
 
 }
 
-/**
-  * @brief TIM16 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM16_Init(void)
-{
-
-  /* USER CODE BEGIN TIM16_Init 0 */
-
-  /* USER CODE END TIM16_Init 0 */
-
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
-
-  /* USER CODE BEGIN TIM16_Init 1 */
-
-  /* USER CODE END TIM16_Init 1 */
-  htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 160 -1;
-  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim16.Init.Period = 1000 - 1;
-  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim16.Init.RepetitionCounter = 0;
-  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_Init(&htim16) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.BreakFilter = 0;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim16, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM16_Init 2 */
-
-  /* USER CODE END TIM16_Init 2 */
-  HAL_TIM_MspPostInit(&htim16);
-
-}
 
 /**
   * @brief USART2 Initialization Function
@@ -468,12 +393,13 @@ void start()
 	  while(ALLUME_START == 1)
 	  {
 		  HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
-		  HAL_Delay(100);
+		  HAL_Delay(25);
 		  HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
-		  HAL_Delay(100);
+		  HAL_Delay(25);
 		  HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
-		  HAL_Delay(100);
+		  HAL_Delay(25);
 		  HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
+		  HAL_Delay(25);
 		  start_rand++;
 		  if(HAL_GPIO_ReadPin(BT_1_GPIO_Port,BT_1_Pin) == GPIO_PIN_SET){
 			  ALLUME_START = 0;
@@ -497,8 +423,8 @@ void right_sequence()
 	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
-	BEEP(1000,1);
-	HAL_Delay(500);
+	BEEP(300,1);
+	HAL_Delay(5);
 	HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
@@ -506,8 +432,8 @@ void right_sequence()
 	if (level<MAX_LEVEL) {
 	  level++;
 	}
-	velocity -=50;
-	HAL_Delay(250);
+	velocity -=5;
+	HAL_Delay(25);
 }
 
 void wrong_sequence()
@@ -521,15 +447,15 @@ void wrong_sequence()
 		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_SET);
 		BEEP(200,1);
-		HAL_Delay(100);
+		//HAL_Delay(10);
 		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-		HAL_Delay(100);
+		HAL_Delay(10);
 	}
 	level = 1;
-	velocity = 1000;
+	velocity = 250;
 }
 
 void generate_sequence(void)
@@ -579,28 +505,28 @@ void show_sequence()
 					BEEP(100,1);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, GPIO_PIN_RESET);
-					HAL_Delay(200);
+					HAL_Delay(50);
 					break;
 				case LED2_hex: //1
 					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_SET);
 					BEEP(100,1);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, GPIO_PIN_RESET);
-					HAL_Delay(200);
+					HAL_Delay(50);
 					break;
 				case LED3_hex: //2
 					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET);
 					BEEP(100,1);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET);
-					HAL_Delay(200);
+					HAL_Delay(50);
 					break;
 				case LED4_hex: //3
 					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
 					BEEP(100,1);
 					HAL_Delay(velocity);
 					HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
-					HAL_Delay(200);
+					HAL_Delay(50);
 					break;
 				default:
 					wrong_sequence();
@@ -625,7 +551,7 @@ void get_sequence()
 						BEEP(100,1);
 						your_sequence[i] = LED1_hex;
 						flag=true;
-						HAL_Delay(200);
+						HAL_Delay(25);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 						if (your_sequence[i] != sequence[i])
 						{
@@ -641,7 +567,7 @@ void get_sequence()
 						BEEP(100,1);
 						your_sequence[i] = LED2_hex;
 						flag=true;
-						HAL_Delay(200);
+						HAL_Delay(25);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 						if (your_sequence[i] != sequence[i])
 						{
@@ -657,7 +583,7 @@ void get_sequence()
 						BEEP(100,1);
 						your_sequence[i] = LED3_hex;
 						flag=true;
-						HAL_Delay(200);
+						HAL_Delay(25);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 						if (your_sequence[i] != sequence[i])
 						{
@@ -673,7 +599,7 @@ void get_sequence()
 						BEEP(100,1);
 						your_sequence[i] = LED4_hex;
 						flag=true;
-						HAL_Delay(200);
+						HAL_Delay(25);
 						HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 						if (your_sequence[i] != sequence[i])
 						{
@@ -713,7 +639,7 @@ void BEEP( uint16_t tone, uint16_t time) { // The function takes the value of th
 	 BUZZER_GPIO_Port->BSRR = BUZZER_Pin;
 	 HAL_Delay(tone);
 	 BUZZER_GPIO_Port->BRR = BUZZER_Pin;
-	 HAL_Delay(tone);
+	 //HAL_Delay(tone);
  }
 }
 
